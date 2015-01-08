@@ -68,9 +68,11 @@ def CheckNewVersion():
     Upload2BaiduPan()
     return True
 
+
 def Upload2BaiduPan():
     os.chdir(PROJECT_ROOT)
     os.system('web/bypy.py upload static/ hadoopx86_64/2.x/')
+
 
 def Extract(version):
     os.chdir(PROJECT_ROOT + '/static/')
@@ -92,7 +94,7 @@ def Make64Hadoop(version, hadoop64):
             # mvn package -DskipTests -Pdist,native -Dtar
             #     print hadoop64
             if os.path.isfile(hadoop64):
-                os.system('cp ' + hadoop64 + ' ' + PROJECT_ROOT + '/static/')
+                os.system('cp ' + hadoop64 + ' ' + PROJECT_ROOT + '/static/' + version.replace('-src', '_x86_64'))
                 break
                 # print('cp '+hadoop64+' '+PROJECT_ROOT+'/static/')
 
