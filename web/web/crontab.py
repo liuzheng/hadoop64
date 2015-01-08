@@ -29,9 +29,11 @@ def CheckNewVersion():
     url = 'http://apache.osuosl.org/hadoop/common/current/'
     html = urllib2.urlopen(url).read()
     version = re.search(r'hadoop-.*?src\.tar\.gz', html).group()
+    print version
     if os.path.isfile(PROJECT_ROOT + '/static/' + version.replace('-src', '')):
         return True
     url = mirrors(version) + '/current/'
+    print(url)
     DownloadLink = url + version
     hadoop64 = '/tmp/' + version[:-7] + '/hadoop-dist/target/' + version.replace('-src', '')
     print DownloadLink
@@ -106,7 +108,7 @@ def speed(url, version):
     try:
         req = urllib2.Request(url + version)
         req.headers['Range'] = 'bytes=%s-%s' % (0, 500)
-        response = urllib2.urlopen(req)
+        response = urllib2.urlopen(req, timeout=1)
         end = clock()
     except:
         return 99999
@@ -154,12 +156,14 @@ def mirrors(version):
     ]
     sp = []
     for i in mirror_list:
+        # print i
         sp.append(speed(i + 'current/', version))
+        # print sp[-1]
     return mirror_list[sp.index(min(sp))]
 
 
-# if __name__ == '__main__':
-# CheckNewVersion()
+if __name__ == '__main__':
+    CheckNewVersion()
 
 # url = 'http://apache.osuosl.org/hadoop/common/current/hadoop-2.6.0-src.tar.gz'
 # req = urllib2.Request(url)
