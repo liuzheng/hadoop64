@@ -100,4 +100,4 @@ def Make64Hadoop(version, hadoop64):
 
 
 if __name__ == '__main__':
-    Upload2BaiduPan()
+    CheckNewVersion()
