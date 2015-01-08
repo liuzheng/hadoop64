@@ -29,11 +29,13 @@ def CheckNewVersion():
     html = urllib2.urlopen(url).read()
     version = re.search(r'hadoop-.*?src\.tar\.gz', html).group()
     if os.path.isfile(PROJECT_ROOT + '/static/' + version.replace('-src', '')):
-        return
+        return True
     DownloadLink = url + version
     hadoop64 = '/tmp/' + version[:-7] + '/hadoop-dist/target/' + version.replace('-src', '')
     print DownloadLink
     print PROJECT_ROOT + '/static/' + version
+    if not os.path.isdir(PROJECT_ROOT + '/static'):
+        os.makedirs(PROJECT_ROOT + '/static')
     if os.path.isfile(PROJECT_ROOT + '/static/' + version):
         html = urllib2.urlopen(DownloadLink + '.mds').read()
         md5head = re.search(r'MD5 =(.*)', html).group(1).replace(' ', '').lower()  # only need the head, that's enough
