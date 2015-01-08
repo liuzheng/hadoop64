@@ -70,7 +70,7 @@ def CheckNewVersion():
 
 def Upload2BaiduPan():
     os.chdir(PROJECT_ROOT)
-    os.system('web/bypy.py static/ hadoopx86_64/2.x/')
+    os.system('web/bypy.py upload static/ hadoopx86_64/2.x/')
 
 def Extract(version):
     os.chdir(PROJECT_ROOT + '/static/')
