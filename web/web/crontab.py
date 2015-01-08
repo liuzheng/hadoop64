@@ -31,12 +31,13 @@ def CheckNewVersion():
     if os.path.isfile(PROJECT_ROOT + '/static/' + version.replace('-src', '')):
         return
     DownloadLink = url + version
+    hadoop64 = '/tmp/' + version[:-7] + '/hadoop-dist/target/' + version.replace('-src', '')
     # print DownloadLink
-    if os.path.isfile(version):
+    if os.path.isfile(PROJECT_ROOT + '/static/' + version):
         html = urllib2.urlopen(DownloadLink + '.mds').read()
         md5head = re.search(r'MD5 =(.*)', html).group(1).replace(' ', '').lower()  # only need the head, that's enough
         # print md5head
-        with open(version, 'rb') as f:
+        with open(PROJECT_ROOT + '/static/' + version, 'rb') as f:
             md5obj = hashlib.md5()
             md5obj.update(f.read())
             hash = md5obj.hexdigest()
@@ -45,30 +46,44 @@ def CheckNewVersion():
             print 'the file is already exist!!'
         else:
             os.remove(version)
-            urllib.urlretrieve(DownloadLink, version)
+            urllib.urlretrieve(DownloadLink, PROJECT_ROOT + '/static/' + version)
     else:
         urllib.urlretrieve(DownloadLink, version)
-    if os.path.isfile('../static/' + version):
+    if os.path.isfile(PROJECT_ROOT + '/static/' + version):
         print('file is make done')
     else:
         print('now extract the tar file')
-        tar = tarfile.open(version)
-        names = tar.getnames()
-        for name in names:
-            tar.extract(name, path="/tmp")
-        tar.close()
-        os.chdir('/tmp/' + version[:-7])
-        os.system('mvn package -DskipTests -Pdist,native -Dtar')
-        # mvn package -DskipTests -Pdist,native -Dtar
-        hadoop64 = 'hadoop-dist/target/' + version.replace('-src', '')
-        print hadoop64
-        if os.path.isfile(hadoop64):
-            os.system('cp ' + hadoop64 + ' ' + PROJECT_ROOT + '/static/')
-            # print('cp '+hadoop64+' '+PROJECT_ROOT+'/static/')
+        Extract(version)
+        Make64Hadoop(version, hadoop64)
+    if not os.path.isfile(hadoop64):
+        print('Error occurred ')
+        return False
+    return True
 
 
-def make64hadoop():
-    return 0
+def Extract(version):
+    os.chdir(PROJECT_ROOT + '/static/')
+    tar = tarfile.open(version)
+    names = tar.getnames()
+    for name in names:
+        tar.extract(name, path="/tmp")
+    tar.close()
+
+
+def Make64Hadoop(version, hadoop64):
+    # Now mvn package
+    os.chdir('/tmp/' + version[:-7])
+    if os.path.isfile(hadoop64):
+        os.system('cp ' + hadoop64 + ' ' + PROJECT_ROOT + '/static/')
+    else:
+        for i in xrange(5):
+            os.system('mvn package -DskipTests -Pdist,native -Dtar')
+            # mvn package -DskipTests -Pdist,native -Dtar
+            #     print hadoop64
+            if os.path.isfile(hadoop64):
+                os.system('cp ' + hadoop64 + ' ' + PROJECT_ROOT + '/static/')
+                break
+                # print('cp '+hadoop64+' '+PROJECT_ROOT+'/static/')
 
 
 if __name__ == '__main__':
