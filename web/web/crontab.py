@@ -29,26 +29,26 @@ def CheckNewVersion():
     url = 'http://apache.osuosl.org/hadoop/common/current/'
     html = urllib2.urlopen(url).read()
     version = re.search(r'hadoop-.*?src\.tar\.gz', html).group()
-    print version
+    # print version
     if os.path.isfile(PROJECT_ROOT + '/static/' + version.replace('-src', '')):
         return True
     url = mirrors(version) + '/current/'
-    print(url)
+    # print(url)
     DownloadLink = url + version
     hadoop64 = '/tmp/' + version[:-7] + '/hadoop-dist/target/' + version.replace('-src', '')
-    print DownloadLink
-    print PROJECT_ROOT + '/static/' + version
+    # print DownloadLink
+    # print PROJECT_ROOT + '/static/' + version
     if not os.path.isdir(PROJECT_ROOT + '/static'):
         os.makedirs(PROJECT_ROOT + '/static')
     if os.path.isfile(PROJECT_ROOT + '/static/' + version):
         html = urllib2.urlopen(DownloadLink + '.mds').read()
         md5head = re.search(r'MD5 =(.*)', html).group(1).replace(' ', '').lower()  # only need the head, that's enough
-        print md5head
+        # print md5head
         with open(PROJECT_ROOT + '/static/' + version, 'rb') as f:
             md5obj = hashlib.md5()
             md5obj.update(f.read())
             hash = md5obj.hexdigest()
-            print hash
+            # print hash
         if md5head == hash[:-2]:
             print 'the file is already exist!!'
         else:
@@ -153,12 +153,50 @@ def mirrors(version):
         'http://www.motorlogy.com/apache/hadoop/common/',
         'http://www.gtlib.gatech.edu/pub/apache/hadoop/common/',
         'http://mirror.cc.columbia.edu/pub/software/apache/hadoop/common/'
+        'http://apache.claz.org/hadoop/common/',
+        'http://www.gtlib.gatech.edu/pub/apache/hadoop/common/',
+        'http://apache.mirrors.hoobly.com/hadoop/common/',
+        'http://mirror.symnds.com/software/Apache/hadoop/common/',
+        'http://apache.osuosl.org/hadoop/common/',
+        'http://apache.mirrors.tds.net/hadoop/common/',
+        'http://download.nextag.com/apache/hadoop/common/',
+        'http://www.eng.lsu.edu/mirrors/apache/hadoop/common/',
+        'http://apache.mirrors.lucidnetworks.net/hadoop/common/',
+        'http://mirror.tcpdiag.net/apache/hadoop/common/',
+        'http://www.trieuvan.com/apache/hadoop/common/',
+        'http://psg.mtu.edu/pub/apache/hadoop/common/',
+        'http://mirrors.advancedhosters.com/apache/hadoop/common/',
+        'http://mirror.cc.columbia.edu/pub/software/apache/hadoop/common/',
+        'http://supergsego.com/apache/hadoop/common/',
+        'http://mirror.sdunix.com/apache/hadoop/common/',
+        'http://mirror.metrocast.net/apache/hadoop/common/',
+        'http://apache.mesi.com.ar/hadoop/common/',
+        'http://www.interior-dsgn.com/apache/hadoop/common/',
+        'http://mirror.cogentco.com/pub/apache/hadoop/common/',
+        'http://apache.spinellicreations.com/hadoop/common/',
+        'http://www.motorlogy.com/apache/hadoop/common/',
+        'http://apache.arvixe.com/hadoop/common/',
+        'http://apache.cs.utah.edu/hadoop/common/',
+        'http://www.carfab.com/apachesoftware/hadoop/common/',
+        'http://www.webhostingjams.com/mirror/apache/hadoop/common/',
+        'http://mirror.reverse.net/pub/apache/hadoop/common/',
+        'http://mirror.nexcess.net/apache/hadoop/common/',
+        'http://apache.tradebit.com/pub/hadoop/common/',
+        'http://apache.petsads.us/hadoop/common/',
+        'http://mirrors.ibiblio.org/apache/hadoop/common/',
+        'http://mirror.olnevhost.net/pub/apache/hadoop/common/',
+        'http://apache.mirrors.pair.com/hadoop/common/',
+        'http://mirrors.sonic.net/apache/hadoop/common/',
+        'http://mirrors.koehn.com/apache/hadoop/common/',
+        'http://mirrors.gigenet.com/apache/hadoop/common/'
     ]
     sp = []
     for i in mirror_list:
         # print i
         sp.append(speed(i + 'current/', version))
         # print sp[-1]
+    # print min(sp)
+    # print sp.index(min(sp))
     return mirror_list[sp.index(min(sp))]
 
 
