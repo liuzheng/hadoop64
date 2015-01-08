@@ -32,34 +32,43 @@ def CheckNewVersion():
         return
     DownloadLink = url + version
     hadoop64 = '/tmp/' + version[:-7] + '/hadoop-dist/target/' + version.replace('-src', '')
-    # print DownloadLink
+    print DownloadLink
+    print PROJECT_ROOT + '/static/' + version
     if os.path.isfile(PROJECT_ROOT + '/static/' + version):
         html = urllib2.urlopen(DownloadLink + '.mds').read()
         md5head = re.search(r'MD5 =(.*)', html).group(1).replace(' ', '').lower()  # only need the head, that's enough
-        # print md5head
+        print md5head
         with open(PROJECT_ROOT + '/static/' + version, 'rb') as f:
             md5obj = hashlib.md5()
             md5obj.update(f.read())
             hash = md5obj.hexdigest()
-            # print hash
+            print hash
         if md5head == hash[:-2]:
             print 'the file is already exist!!'
         else:
-            os.remove(version)
+            os.remove(PROJECT_ROOT + '/static/' + version)
             urllib.urlretrieve(DownloadLink, PROJECT_ROOT + '/static/' + version)
     else:
-        urllib.urlretrieve(DownloadLink, version)
+        urllib.urlretrieve(DownloadLink, PROJECT_ROOT + '/static/' + version)
     if os.path.isfile(PROJECT_ROOT + '/static/' + version):
-        print('file is make done')
+        print('now extract the tar file')
+        Extract(version)
+        Make64Hadoop(version, hadoop64)
     else:
+        # download again
+        urllib.urlretrieve(DownloadLink, PROJECT_ROOT + '/static/' + version)
         print('now extract the tar file')
         Extract(version)
         Make64Hadoop(version, hadoop64)
     if not os.path.isfile(hadoop64):
         print('Error occurred ')
         return False
+    Upload2BaiduPan()
     return True
 
+def Upload2BaiduPan():
+    os.chdir(PROJECT_ROOT)
+    os.system('web/bypy.py static/ hadoopx86_64/2.x/')
 
 def Extract(version):
     os.chdir(PROJECT_ROOT + '/static/')
@@ -87,4 +96,4 @@ def Make64Hadoop(version, hadoop64):
 
 
 if __name__ == '__main__':
-    CheckNewVersion()
+    Upload2BaiduPan()
