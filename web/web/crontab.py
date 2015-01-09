@@ -32,9 +32,6 @@ def CheckNewVersion():
     # print version
     if os.path.isfile(PROJECT_ROOT + '/static/' + version.replace('-src', '')):
         return True
-    url = mirrors(version) + '/current/'
-    # print(url)
-    DownloadLink = url + version
     hadoop64 = '/tmp/' + version[:-7] + '/hadoop-dist/target/' + version.replace('-src', '')
     # print DownloadLink
     # print PROJECT_ROOT + '/static/' + version
@@ -52,9 +49,15 @@ def CheckNewVersion():
         if md5head == hash[:-2]:
             print 'the file is already exist!!'
         else:
+            url = mirrors(version) + '/current/'
+            # print(url)
+            DownloadLink = url + version
             os.remove(PROJECT_ROOT + '/static/' + version)
             urllib.urlretrieve(DownloadLink, PROJECT_ROOT + '/static/' + version)
     else:
+        url = mirrors(version) + '/current/'
+        # print(url)
+        DownloadLink = url + version
         urllib.urlretrieve(DownloadLink, PROJECT_ROOT + '/static/' + version)
     if os.path.isfile(PROJECT_ROOT + '/static/' + version):
         print('now extract the tar file')
